@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# Display information of domain and subdomain
-# shellcheck disable=SC2086
+# Usuage: ./1-world_wide_web <domain> <subdomain>
+# Display information about subdomains.
+
+# Functions to retrieve and display information about a subdomain
 domain_information () {
  # perform DNS lookup for the subdomain under the specified domain
 line=$(dig "$2"."$1" | grep -A1 "ANSWER SECTION:" | tr '\t' '\n' | tail -2 | tr '\n' ' ')
