@@ -1,21 +1,27 @@
 #!/usr/bin/env bash
 # Display information of domain and subdomain
 # shellcheck disable=SC2086
-info_Domain () {
-    A=$(dig $2.$1 | awk '/ANSWER SECTION:/{getline;print;}')
-    RE=$(echo $A | cut -d' ' -f 4)
-    IP=$(echo $A | cut -d' ' -f 5)
-    echo "The subdomain $2 is a $RE record and points to $IP"
+domain_information () {
+ # perform DNS lookup for the subdomain under the specified domain
+line=$(dig "$2"."$1" | grep -A1 "ANSWER SECTION:" | tr '\t' '\n' | tail -2 | tr '\n' ' ')
+# Extract relevant information nd print it
+echo "$2 $line" | awk '{print "The subdomain " $1 " is a " $2 " record and points to " $3}'
 }
-if [ $# -lt 1 ]
+
+# Check the number of arguements passed to the script
+if [ "$#" == 1]
 then
-    echo "Usage: 1-world_wide_web DOMAIN SUBDOMAIN(optional)"
-elif [ $# -eq 1 ]
+	# If there is only one arguement,
+	#Call the domain information function with predefined subdomain names
+	domain_information "$1" "www"
+	domain_information "$1" "lb-01"
+	domain_information "$1" "web-01"
+	domain_information "$1" "web-02"
+
+elif [ "$#" == 2]
 then
-    info_Domain "$1" "www"
-    info_Domain "$1" "lb-01"
-    info_Domain "$1" "web-01"
-    info_Domain "$1" "web-02"
-else
-    info_Domain "$1" "$2"
+	# If there are two arguements, call the domain information \
+	# function with the provided subdomain name
+	domain_information "$1" "$2"
+
 fi
